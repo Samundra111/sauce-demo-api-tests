@@ -5,39 +5,45 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# These stay here for the fixtures to use
+# Global variables from .env
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 HEADERS = {"x-api-key": API_KEY}
 
-
-@pytest.fixture
+# 1. Change this to session scope to satisfy Playwright/base-url plugin
+@pytest.fixture(scope="session")
 def base_url():
     return BASE_URL
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def headers():
     return HEADERS
 
-@pytest.fixture
-def auth_token(base_url,headers):
-    payload={
-        "email":"eve.holt@reqres.in",
-        "password":"cityslicka"
+# 2. Usually, you want auth_token to be session scoped too 
+# so you don't log in 50 times during one test run.
+@pytest.fixture(scope="session")
+def auth_token(base_url, headers):
+    payload = {
+        "email": "eve.holt@reqres.in",
+        "password": "cityslicka"
     }
-    response=requests.post(f"{base_url}/login",payload,headers=headers)
-    token=response.json()['token']
+    # Note: Using json=payload is better for modern APIs
+    response = requests.post(f"{base_url}/login", json=payload, headers=headers)
+    token = response.json()['token']
     return token
-@pytest.fixture
-def auth_headers(headers,auth_token):
-    combined_headers=headers.copy()
-    combined_headers['authorization']=f"Bearer {auth_token}"
+
+@pytest.fixture(scope="session")
+def auth_headers(headers, auth_token):
+    combined_headers = headers.copy()
+    combined_headers['authorization'] = f"Bearer {auth_token}"
     return combined_headers
 
+# These remain function scoped (default) because you 
+# want a fresh request for every test case.
 @pytest.fixture
-def get_all_user():
-    return requests.get(f"{BASE_URL}/users", headers=HEADERS)
+def get_all_user(base_url, headers):
+    return requests.get(f"{base_url}/users", headers=headers)
 
 @pytest.fixture
-def user_id_1():
-    return requests.get(f"{BASE_URL}/users/1", headers=HEADERS)
+def user_id_1(base_url, headers):
+    return requests.get(f"{base_url}/users/1", headers=headers)
