@@ -47,3 +47,13 @@ def get_all_user(base_url, headers):
 @pytest.fixture
 def user_id_1(base_url, headers):
     return requests.get(f"{base_url}/users/1", headers=headers)
+
+from playwright.async_api import Page
+from pages.login_page import Login
+
+@pytest.fixture
+def logged_in_user(page:Page):
+    login=Login(page)
+    login.goto()
+    login.login("standard_user","secret_sauce")
+    return page

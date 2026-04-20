@@ -59,19 +59,17 @@ def test_locked_out_user(page:Page):
     login.login("locked_out_user","secret_sauce")
     assert "locked out" in login.get_error_messege()
 
-def test_inventory_page(page:Page):
-    login=Login(page)
-    login.goto()
-    login.login('standard_user',"secret_sauce")
+def test_inventory_page(logged_in_user):
+    
 
-    inventory=Inventory(page)
+    inventory=Inventory(logged_in_user)
     assert inventory.get_title()=="Products"
     assert inventory.get_item_count()==6
     inventory.add_item_to_cart()
     assert inventory.get_cart_count()=="1"
     
     inventory.go_to_cart()
-    assert "cart" in page.url
+    assert "cart" in logged_in_user.url
     
     
     
