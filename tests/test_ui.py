@@ -73,4 +73,28 @@ def test_inventory_page(logged_in_user):
     
     
     
+def test_failing_screenshot(logged_in_user):
+    assert "wrong" in logged_in_user.url
 
+def test_new_tab(page: Page):
+    page.goto("https://www.saucedemo.com")
+    
+    # Listen for new page opening
+    with page.context.expect_page() as new_page_info:
+        # This would click something that opens new tab
+        page.evaluate("window.open('https://www.google.com')")
+    
+    new_page = new_page_info.value
+    new_page.wait_for_load_state()
+    
+    assert "google" in new_page.url
+    print(f"New tab URL: {new_page.url}")
+
+def test_handle_dialog(page: Page):
+    page.goto("https://www.saucedemo.com")
+    
+    # Handle any dialog that appears
+    page.on("dialog", lambda dialog: dialog.accept())
+    
+    # Trigger a dialog
+    page.evaluate("alert('test alert')")

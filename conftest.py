@@ -57,3 +57,4 @@ def logged_in_user(page:Page):
     login.goto()
     login.login("standard_user","secret_sauce")
     return page
+
