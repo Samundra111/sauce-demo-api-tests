@@ -12,6 +12,7 @@ A complete QA automation project built with Python, Pytest and Playwright.
 - GitHub Actions (CI/CD)
 
 ## Project Structure
+```
 saucedemo_tests/
     ├── pages/              # Page Object Model
     │   ├── login_page.py
@@ -25,6 +26,7 @@ saucedemo_tests/
     ├── reports/            # Test reports
     ├── conftest.py         # Shared fixtures
     └── pytest.ini          # Pytest configuration
+```
 
 ## Test Coverage
 ### UI Tests
